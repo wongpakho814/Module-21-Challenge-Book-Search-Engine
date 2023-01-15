@@ -19,11 +19,6 @@ const resolvers = {
   },
 
   Mutation: {
-    createUser: async (parent, { username, email, password }) => {
-      const user = await User.create({ username, email, password });
-      const token = signToken(user);
-      return { token, user };
-    },
     login: async (parent, { username, email, password }) => {
       const user = await User.findOne({
         $or: [{ username: username }, { email: email }],
@@ -38,6 +33,11 @@ const resolvers = {
         throw new AuthenticationError("Wrong password!");
       }
 
+      const token = signToken(user);
+      return { token, user };
+    },
+    addUser: async (parent, { username, email, password }) => {
+      const user = await User.create({ username, email, password });
       const token = signToken(user);
       return { token, user };
     },
@@ -59,11 +59,11 @@ const resolvers = {
       }
       throw new AuthenticationError("You need to be logged in!");
     },
-    deleteBook: async (parent, { userId, bookId }, context) => {
+    removeBook: async (parent, { userId, bookId }, context) => {
       if (context.user) {
         return User.findOneAndUpdate(
           { _id: userId },
-          { $pull: { savedBooks: { _id: bookId } } },
+          { $pull: { savedBooks: { bookId: bookId } } },
           { new: true }
         );
       }
