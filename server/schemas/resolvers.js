@@ -26,7 +26,7 @@ const resolvers = {
     },
     login: async (parent, { username, email, password }) => {
       const user = await User.findOne({
-        $or: [{ username: body.username }, { email: body.email }],
+        $or: [{ username: username }, { email: email }],
       });
 
       if (!user) {
