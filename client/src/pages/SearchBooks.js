@@ -50,7 +50,6 @@ const SearchBooks = () => {
       const { items } = await response.json();
 
       const bookData = items.map((book) => ({
-        userId: Auth.getProfile().data._id,
         bookId: book.id,
         authors: book.volumeInfo.authors || ["No author to display"],
         title: book.volumeInfo.title,
@@ -80,13 +79,10 @@ const SearchBooks = () => {
     try {
       const { data } = await saveBook({
         variables: {
+          userId: Auth.getProfile().data._id,
           bookToSave,
         },
       });
-
-      if (!response.ok) {
-        throw new Error("something went wrong!");
-      }
 
       // if book successfully saves to user's account, save book id to state
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);

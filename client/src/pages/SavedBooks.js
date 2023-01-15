@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Jumbotron, Container, CardColumns, Card, Button } from 'react-bootstrap';
 
-import { getMe, deleteBook } from '../utils/API';
-import Auth from '../utils/auth';
+import { DELETE_BOOK } from "../../utils/mutations";
+import { QUERY_ME } from "../../utils/queries";
 import { removeBookId } from '../utils/localStorage';
+
+import Auth from "../utils/auth";
 
 const SavedBooks = () => {
   const [userData, setUserData] = useState({});
+
+  const [deleteBook, { error }] = useMutation(DELETE_BOOK);
 
   // use this to determine if `useEffect()` hook needs to run again
   const userDataLength = Object.keys(userData).length;
@@ -20,14 +24,8 @@ const SavedBooks = () => {
           return false;
         }
 
-        const response = await getMe(token);
-
-        if (!response.ok) {
-          throw new Error('something went wrong!');
-        }
-
-        const user = await response.json();
-        setUserData(user);
+        const { me } = cache.readQuery({ query: QUERY_ME });
+        setUserData(me);
       } catch (err) {
         console.error(err);
       }
@@ -45,14 +43,14 @@ const SavedBooks = () => {
     }
 
     try {
-      const response = await deleteBook(bookId, token);
+      const { data } = await deleteBook({
+        variables: {
+          userId: Auth.getProfile().data._id,
+          bookId: bookId
+        },
+      });
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      const updatedUser = await response.json();
-      setUserData(updatedUser);
+      setUserData(data);
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
     } catch (err) {
