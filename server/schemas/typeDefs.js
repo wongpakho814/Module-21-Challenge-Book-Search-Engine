@@ -26,7 +26,6 @@ const typeDefs = gql`
 
   type Query {
     getSingleUser(username: String!): User
-    getSingleUser(userId: ID!): User
     me: User
   }
 
