@@ -24,16 +24,20 @@ export const CREATE_USER = gql`
   }
 `;
 
-export const ADD_THOUGHT = gql`
-  mutation addThought($thoughtText: String!) {
-    addThought(thoughtText: $thoughtText) {
+export const SAVE_BOOK = gql`
+  mutation saveBook(userId: ID!, authors: [String], description: String!, bookId: String!, image: String, link: String, title: String!) {
+    saveBook(userId: $userId, authors: $authors, description: $description, bookId: $bookId, image: $image, link: $link, title: $title) {
       _id
-      thoughtText
-      thoughtAuthor
-      createdAt
-      comments {
+      username
+      email
+      savedBooks {
         _id
-        commentText
+        authors
+        description
+        bookId
+        image
+        link
+        title
       }
     }
   }

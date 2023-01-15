@@ -34,11 +34,12 @@ const typeDefs = gql`
     login(email: String!, password: String!): Auth
     saveBook(
       userId: ID!
+      authors: [String]
       description: String!
       bookId: String!
-      title: String!
       image: String
       link: String
+      title: String!
     ): User
     deleteBook(userId: ID!, bookId: String!): User
   }
