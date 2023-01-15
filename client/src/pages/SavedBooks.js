@@ -16,36 +16,12 @@ import { removeBookId } from "../utils/localStorage";
 import Auth from "../utils/auth";
 
 const SavedBooks = () => {
-  const [userData, setUserData] = useState({});
-
   const [deleteBook, { error }] = useMutation(DELETE_BOOK);
-
-  // use this to determine if `useEffect()` hook needs to run again
-//   const userDataLength = Object.keys(userData).length;
-
-  //   useEffect(() => {
-  //     const getUserData = async () => {
-  //       try {
-  //         const token = Auth.loggedIn() ? Auth.getToken() : null;
-
-  //         if (!token) {
-  //           return false;
-  //         }
-  //         const me = useGetMe();
-
-  //         setUserData(me);
-  //       } catch (err) {
-  //         console.error(err);
-  //       }
-  //     };
-
-  //     getUserData();
-  //   }, [userDataLength]);
   const { loading, data } = useQuery(QUERY_ME);
   const me = data?.me;
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
-  const handleDeleteBook = async (bookId) => {
+  const handleDeleteBook = async (id, bookId) => {
     const token = Auth.loggedIn() ? Auth.getToken() : null;
 
     if (!token) {
@@ -56,11 +32,10 @@ const SavedBooks = () => {
       const { data } = await deleteBook({
         variables: {
           userId: Auth.getProfile().data._id,
-          bookId: bookId,
+          bookId: id,
         },
       });
 
-      setUserData(data);
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
     } catch (err) {
@@ -86,14 +61,14 @@ const SavedBooks = () => {
           </Jumbotron>
           <Container>
             <h2>
-              {userData.savedBooks.length
-                ? `Viewing ${userData.savedBooks.length} saved ${
-                    userData.savedBooks.length === 1 ? "book" : "books"
+              {me.savedBooks.length
+                ? `Viewing ${me.savedBooks.length} saved ${
+                    me.savedBooks.length === 1 ? "book" : "books"
                   }:`
                 : "You have no saved books!"}
             </h2>
             <CardColumns>
-              {userData.savedBooks.map((book) => {
+              {me.savedBooks.map((book) => {
                 return (
                   <Card key={book.bookId} border="dark">
                     {book.image ? (
@@ -109,7 +84,7 @@ const SavedBooks = () => {
                       <Card.Text>{book.description}</Card.Text>
                       <Button
                         className="btn-block btn-danger"
-                        onClick={() => handleDeleteBook(book.bookId)}
+                        onClick={() => handleDeleteBook(book._id, book.bookId)}
                       >
                         Delete this Book!
                       </Button>
