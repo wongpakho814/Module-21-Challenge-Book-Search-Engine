@@ -53,8 +53,8 @@ const SearchBooks = () => {
       const bookData = items.map((book) => ({
         bookId: book.id,
         authors: book.volumeInfo.authors || ["No author to display"],
-        title: book.volumeInfo.title,
         description: book.volumeInfo.description,
+        title: book.volumeInfo.title,
         image: book.volumeInfo.imageLinks?.thumbnail || "",
       }));
 
@@ -72,10 +72,7 @@ const SearchBooks = () => {
 
     try {
       const { data } = await saveBook({
-        variables: {
-          userId: Auth.getProfile().data._id, 
-          ...bookToSave,
-        },
+        variables: { ...bookToSave },
       });
       if (!data) {
         console.log("Something went wrong when retrieving saved books!");

@@ -13,8 +13,6 @@ import { REMOVE_BOOK } from "../utils/mutations";
 import { GET_ME } from "../utils/queries";
 import { removeBookId } from "../utils/localStorage";
 
-import Auth from "../utils/auth";
-
 const SavedBooks = () => {
   const [removeBook] = useMutation(REMOVE_BOOK);
   const { loading, data } = useQuery(GET_ME);
@@ -24,10 +22,7 @@ const SavedBooks = () => {
   const handleDeleteBook = async (bookId) => {
     try {
       const { data } = await removeBook({
-        variables: {
-          userId: Auth.getProfile().data._id,
-          bookId: bookId,
-        },
+        variables: { bookId: bookId },
       });
       if(!data) {
         console.log("Something went wrong when deleting!");
